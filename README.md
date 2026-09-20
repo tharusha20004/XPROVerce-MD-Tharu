@@ -1,210 +1,138 @@
 <div align="center">
 
-<img src="https://i.ibb.co/VWy8DK06/Whats-App-Image-2025-12-09-at-17-38-33-fd4d4ecd.jpg" width="180" />
+<img src="https://i.ibb.co/VWy8DK06/Whats-App-Image-2025-12-09-at-17-38-33-fd4d4ecd.jpg" width="180" alt="XPROVerce MD" />
 
-# 👑 XPROVerce MD
-### Advanced WhatsApp Multi-Device Bot
+# XPROVerce MD
 
-[🌐 Home](http://xpro-verce.site/) •
-[💻 GitHub](https://github.com/xproverce/XPROVerce-MD)
+### Private-base WhatsApp Multi-Device Bot Launcher
+
+[Website](http://xpro-verce.site/) • [GitHub](https://github.com/xproverce/XPROVerce-MD)
 
 </div>
 
----
+XPROVerce MD is a WhatsApp Multi-Device bot built with Baileys. This repository contains the public launcher. The bot source and private runtime files are downloaded from the private `xproverce/base` repository only when the launcher starts.
 
-## 🚀 About
+## How It Works
 
-**XPROVerce MD** is a powerful **WhatsApp Multi-Device bot** built using **Baileys MD**.  
-Designed for **speed, stability, and scalability**, it supports plugins, automation, media tools, and cloud deployment.
+1. The launcher reads the session configuration.
+2. It downloads the selected branch of the private base repository through the GitHub API.
+3. It prepares the session and runtime files in a temporary working directory.
+4. It installs the private base dependencies.
+5. It starts the private bot process.
 
----
+The private base is not committed to this public repository. Keep the GitHub access token and session ID in deployment secrets.
 
-## ✨ Features
+## Features
 
-- 🔗 WhatsApp Multi-Device (Baileys MD)
-- 🧩 Plugin-based command system
-- 💬 Buttons, Lists & Reaction Commands
-- 📥 Media download & processing
-- 👥 Group moderation & automation
-- 🌙 Night Mode & presence control
-- ⚙️ Free & Premium settings
-- 📢 Status auto-view & reactions
-- 🔐 Session auto-restore
-- 🌐 Built-in Express server
-- 🔄 Update-ready architecture
+- WhatsApp Multi-Device support through Baileys
+- Plugin and command handling
+- Group moderation and automation
+- Buttons, lists, polls, reactions, and newsletter tools
+- Media downloading, stickers, voice notes, and image processing
+- Auto-reply, auto-sticker, and auto-voice features
+- Status viewing and automated reactions
+- Session restore and cloud-backed storage integrations
+- Express services and deployment-friendly startup
 
----
+## Technology
 
-## 🛠️ Tech Stack
-
-- Node.js
-- Baileys MD
+- Node.js 18 or newer
+- Baileys Multi-Device
 - Express.js
-- Axios
-- Sharp
-- Node-Cache
-- MegaJS
+- MongoDB and PostgreSQL integrations
+- Axios, Sharp, Puppeteer, FFmpeg, and Node-Cache
 
----
-
-## 📦 Installation (Local)
+## Local Setup
 
 ```bash
 git clone https://github.com/xproverce/XPROVerce-MD.git
 cd XPROVerce-MD
 npm install
-npm start
-````
+```
 
----
-
-## 🔑 Environment Variables
+Create `public/.env`, or export the variables in your shell:
 
 ```env
-PORT=8000
 SESSION_ID=your_session_id
 ```
 
----
+Start the launcher from the repository root:
 
-# 🚀 Deployment Platforms
+```bash
+npm start
+```
 
-## 🟣 Heroku
+The launcher uses `GITHUB_TOKEN` as a fallback when `PRIVATE_BASE_TOKEN` is not set. `PRIVATE_BASE_DIR` can be used to override the temporary private-base directory.
 
-> ⚠️ Heroku requires a **worker dyno**, not web.
+## Deployment
 
-1. Fork the repository
-2. Create a new Heroku app
-3. Set **Buildpack**:
+The service is a long-running worker. Set the following environment variables in your hosting platform:
 
-   ```
-   heroku/nodejs
-   ```
-4. Add Environment Variables in **Config Vars**
-5. Deploy from GitHub
-6. Start **worker dyno**
+| Variable | Required | Description |
+| --- | --- | --- |
+| `SESSION_ID` | Yes | WhatsApp session configuration used by the launcher |
+
+### Koyeb, Render, or Railway
+
+1. Create a worker/background service from this repository.
+2. Use Node.js 18 or newer.
+3. Build command: `npm install`
+4. Start command: `npm start`
+5. Add the required environment variables as platform secrets.
+
+### Heroku
+
+Use a worker dyno rather than a web dyno:
 
 ```bash
 heroku ps:scale worker=1
 ```
 
----
+Set the same environment variables as Heroku Config Vars.
 
-## 🟢 Koyeb
+## Private Base Security
 
-1. Fork the repo
-2. Go to **koyeb.com**
-3. Create App → GitHub Repository
-4. Runtime: **Node.js**
-5. Start command:
+Never commit any of the following:
 
-   ```bash
-   npm start
-   ```
-6. Add environment variables
-7. Deploy ✅
+- `PRIVATE_BASE_TOKEN`
+- `SESSION_ID`
+- private `.env` files
+- decrypted private-base source files
+- encryption passphrases
 
----
+The private base may also be stored as an encrypted archive for backup. Keep its passphrase outside GitHub. Encryption does not remove the need for a secure deployment secret because the bot must access decrypted files while running.
 
-## 🔵 Render
+## GitHub Actions
 
-1. Fork the repo
-2. Go to **render.com**
-3. New → **Background Worker**
-4. Connect GitHub repository
-5. Build command:
-
-   ```bash
-   npm install
-   ```
-6. Start command:
-
-   ```bash
-   npm start
-   ```
-7. Add environment variables
-8. Deploy 🚀
-
----
-
-## 🟡 Railway (Recommended)
-
-1. Fork repository
-2. Go to **railway.app**
-3. New Project → Deploy from GitHub
-4. Add environment variables
-5. Start command:
-
-   ```bash
-   npm start
-   ```
-6. Done ✅
-
-> Best for WhatsApp bots (long-running process support)
-
----
-
-## ⚙️ GitHub Actions (CI)
-
-Create this file:
-
-### 📁 `.github/workflows/node.yml`
+For CI, keep secrets in repository or environment secrets and never place them directly in workflow files. A minimal validation workflow can install dependencies and check the launcher:
 
 ```yaml
 name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
-
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - run: npm install
-    - run: npm start
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - run: npm install
+      - run: node --check start.js
 ```
 
----
+## Disclaimer
 
-## ⚠️ Important Notes
+This project is provided for educational and lawful automation purposes. Use WhatsApp integrations responsibly and follow WhatsApp terms, applicable laws, and platform policies. The maintainers are not responsible for misuse or account restrictions.
 
-* Do **NOT** obfuscate updater or loader files
-* Obfuscate only core logic if needed
-* Keep `start.js` clean
-* Follow WhatsApp Terms of Service
+## Credits
 
----
-
-## 📜 Disclaimer
-
-This project is for **educational purposes only**.
-The developer is **not responsible** for misuse or WhatsApp policy violations.
-
----
-
-## 👑 Credits
-
-* **XPROVerce Team**
-* **Baileys Multi-Device**
-* Open-source contributors
-
----
-
-⭐ **Star this repo if you like it!**
-
-```
+- XPROVerce Team
+- Baileys and its contributors
+- Open-source contributors
