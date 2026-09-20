@@ -1,3 +1,3 @@
 module.exports = {
-  SESSION_ID: '94758775628-1789255898125',
+  SESSION_ID: 'Your Session ID',
 };
