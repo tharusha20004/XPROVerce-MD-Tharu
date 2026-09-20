@@ -1,0 +1,13 @@
+{
+  "name": "xpro-public-launcher",
+  "version": "1.0.0",
+  "description": "Public launcher for the private XPRO bot base",
+  "main": "start.js",
+  "scripts": {
+    "start": "node start.js",
+    "stop": "node stop.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
